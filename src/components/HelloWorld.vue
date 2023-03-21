@@ -1,58 +1,74 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="diagram">
+   <div v-html="diagram" class="circle"></div>
+   <Legend :items="items" />
   </div>
 </template>
 
 <script>
+import diagram from '@/assets/diagram'
+import Legend from '@/components/Legend.vue'
 export default {
   name: 'HelloWorld',
-  props: {
-    msg: String
+  data() {
+    return {
+      diagram: diagram,
+      items: [
+        {id:"red", name: 'розовый сегмент', color: '#FF69B4', highlight: false},
+        {id: "green", name: 'зеленый сегмент', color: "#97BB31", highlight: false},
+        {id: "gray", name: 'серый сегмент', color: '#D9D9D9', highlight: false}
+      ]
+    }
+  },
+  mounted() {
+    let paths = document.querySelectorAll('.sector')
+    let highlights = document.querySelectorAll('.highlight')
+    paths.forEach(path => {
+      path.onmouseover = this.mouseoverHadler.bind(this)
+      
+    })
+    highlights.forEach(highlight => highlight.onmouseout = this.mouseoutHandler.bind(this))
+  },
+  methods: {
+    mouseoverHadler(e) {
+      this.items.map(item =>{
+        if(item.id === e.target.id) {
+          item.highlight = true
+          document.getElementsByName(item.id)[0].classList.remove('hidden')
+        }
+      })
+
+    },
+    mouseoutHandler(e) {
+      this.items.map(item => {
+        if(item.id === e.target.attributes.name.value) {
+          e.target.classList.add('hidden')
+          item.highlight = false
+        }
+      })
+    }
+  },
+  components: {
+    Legend
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
+<style>
+.diagram {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  width: 772px;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+.circle {
+  margin-right: 100px;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+.hidden {
+  display: none;
 }
-a {
-  color: #42b983;
+.visible {
+  opacity: 0.2 !important
 }
 </style>
